@@ -9,9 +9,13 @@ namespace NextLevelGames
 
         public AudioClip[] audioClips;
         public AudioClip[] boxFallAudioClips;
+        private AudioSource musicSource;
+        private bool soundEnabled = true;
 
         private void Awake()
         {
+            musicSource = GetComponent<AudioSource>();
+
             if (Instance != null)
                 Destroy(gameObject);
             else
@@ -33,6 +37,7 @@ namespace NextLevelGames
             }
 
             AudioSource tempAudioSource = gameObject.AddComponent<AudioSource>();
+            tempAudioSource.mute = !soundEnabled;
 
             if (name == "Coin")
                 tempAudioSource.volume = .2f;
@@ -47,9 +52,26 @@ namespace NextLevelGames
             AudioClip clip = boxFallAudioClips[UnityEngine.Random.Range(0, boxFallAudioClips.Length)];
 
             AudioSource tempAudioSource = gameObject.AddComponent<AudioSource>();
+            tempAudioSource.mute = !soundEnabled;
             tempAudioSource.clip = clip;
             tempAudioSource.Play();
             Destroy(tempAudioSource, clip.length);
+        }
+
+        public void SetSoundEnabled(bool enabled)
+        {
+            soundEnabled = enabled;
+            foreach (AudioSource source in GetComponents<AudioSource>())
+            {
+                if (source != musicSource)
+                    source.mute = !soundEnabled;
+            }
+        }
+
+        public void SetMusicEnabled(bool enabled)
+        {
+            if (musicSource != null)
+                musicSource.mute = !enabled;
         }
     }
 }
